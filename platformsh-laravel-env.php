@@ -31,11 +31,18 @@ function mapPlatformShEnvironment() : void
     $secure_cookie = getenv('SESSION_SECURE_COOKIE') ?: 1;
     setEnvVar('SESSION_SECURE_COOKIE', $secure_cookie);
 
-    mapPlatformShDatabase('database');
+    // Decode the relationships array once for performance. It's not quite as encapsulated
+    // but performance wins here.
+    if (getenv('PLATFORM_RELATIONSHIPS')) {
+        $relationships = json_decode(base64_decode(getenv('PLATFORM_RELATIONSHIPS'), true), true);
 
-    mapPlatformShRedisCache('rediscache');
+        mapPlatformShDatabase('database', $relationships);
 
-    mapPlatformShRedisSession('redissession');
+        mapPlatformShRedisCache('rediscache', $relationships);
+
+        mapPlatformShRedisSession('redissession', $relationships);
+    }
+
 
     // @TODO Should MAIL_* be set as well?
 
@@ -68,54 +75,44 @@ function setEnvVar(string $name, $value = null) : void
     }
 }
 
-function mapPlatformShDatabase(string $relationshipName) : void
+function mapPlatformShDatabase(string $relationshipName, array $relationships) : void
 {
-    if (getenv('PLATFORM_RELATIONSHIPS')) {
-        $relationships = json_decode(base64_decode(getenv('PLATFORM_RELATIONSHIPS'), true), true);
-        if (isset($relationships[$relationshipName])) {
-            foreach ($relationships[$relationshipName] as $endpoint) {
-                if (empty($endpoint['query']['is_master'])) {
-                    continue;
-                }
-
-                setEnvVar('DB_CONNECTION', $endpoint['scheme']);
-
-                setEnvVar('DB_HOST', $endpoint['host']);
-                setEnvVar('DB_PORT', $endpoint['port']);
-                setEnvVar('DB_DATABASE', $endpoint['path']);
-                setEnvVar('DB_USERNAME', $endpoint['username']);
-                setEnvVar('DB_PASSWORD', $endpoint['password']);
+    if (isset($relationships[$relationshipName])) {
+        foreach ($relationships[$relationshipName] as $endpoint) {
+            if (empty($endpoint['query']['is_master'])) {
+                continue;
             }
+
+            setEnvVar('DB_CONNECTION', $endpoint['scheme']);
+            setEnvVar('DB_HOST', $endpoint['host']);
+            setEnvVar('DB_PORT', $endpoint['port']);
+            setEnvVar('DB_DATABASE', $endpoint['path']);
+            setEnvVar('DB_USERNAME', $endpoint['username']);
+            setEnvVar('DB_PASSWORD', $endpoint['password']);
         }
     }
 }
 
-function mapPlatformShRedisCache(string $relationshipName) : void
+function mapPlatformShRedisCache(string $relationshipName, array $relationships) : void
 {
-    if (getenv('PLATFORM_RELATIONSHIPS')) {
-        $relationships = json_decode(base64_decode(getenv('PLATFORM_RELATIONSHIPS'), true), true);
-        if (isset($relationships[$relationshipName])) {
-            setEnvVar('CACHE_DRIVER', 'redis');
-            foreach ($relationships[$relationshipName] as $endpoint) {
-                setEnvVar('REDIS_HOST', $endpoint['host']);
-                setEnvVar('REDIS_PORT', $endpoint['port']);
-                break;
-            }
+    if (isset($relationships[$relationshipName])) {
+        setEnvVar('CACHE_DRIVER', 'redis');
+        foreach ($relationships[$relationshipName] as $endpoint) {
+            setEnvVar('REDIS_HOST', $endpoint['host']);
+            setEnvVar('REDIS_PORT', $endpoint['port']);
+            break;
         }
     }
 }
 
-function mapPlatformShRedisSession(string $relationshipName) : void
+function mapPlatformShRedisSession(string $relationshipName, array $relationships) : void
 {
-    if (getenv('PLATFORM_RELATIONSHIPS')) {
-        $relationships = json_decode(base64_decode(getenv('PLATFORM_RELATIONSHIPS'), true), true);
-        if (isset($relationships[$relationshipName])) {
-            setEnvVar('SESSION_DRIVER', 'redis');
-            foreach ($relationships[$relationshipName] as $endpoint) {
-                setEnvVar('REDIS_HOST', $endpoint['host']);
-                setEnvVar('REDIS_PORT', $endpoint['port']);
-                break;
-            }
+    if (isset($relationships[$relationshipName])) {
+        setEnvVar('SESSION_DRIVER', 'redis');
+        foreach ($relationships[$relationshipName] as $endpoint) {
+            setEnvVar('REDIS_HOST', $endpoint['host']);
+            setEnvVar('REDIS_PORT', $endpoint['port']);
+            break;
         }
     }
 }
