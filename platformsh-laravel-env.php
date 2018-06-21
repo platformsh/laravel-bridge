@@ -20,7 +20,8 @@ function mapPlatformShEnvironment() : void
         return;
     }
 
-    // APP_URL (need to derive)
+    // Laravel needs an accurate base URL.
+    mapAppUrl();
 
     // Set the application secret if it's not already set.
     $secret = getenv('APP_KEY') ?: getenv('PLATFORM_PROJECT_ENTROPY') ?: null;
@@ -42,7 +43,6 @@ function mapPlatformShEnvironment() : void
 
         mapPlatformShRedisSession('redissession', $relationships);
     }
-
 
     // @TODO Should MAIL_* be set as well?
 
@@ -72,6 +72,30 @@ function setEnvVar(string $name, $value = null) : void
             throw new \RuntimeException('Refusing to add ambiguous environment variable ' . $name . ' to $_SERVER');
         }
         $_SERVER[$name] = $value;
+    }
+}
+
+function mapAppUrl() : void
+{
+    // If the APP_URL is already set, leave it be.
+    if (getenv('APP_URL')) {
+        return;
+    }
+
+    if (!getenv('PLATFORM_ROUTES')) {
+        return;
+    }
+
+    $routes = json_decode(base64_decode(getenv('PLATFORM_ROUTES')), TRUE);
+    $settings['trusted_host_patterns'] = [];
+    foreach ($routes as $url => $route) {
+        $host = parse_url($url, PHP_URL_HOST);
+        // This conditional translates to "if it's the route for this app".
+        // Note: wildcard routes are not currently supported by this code.
+        if ($host !== FALSE && $route['type'] == 'upstream' && $route['upstream'] == getenv('PLATFORM_APPLICATION_NAME')) {
+            setEnvVar('APP_URL', $url);
+            return;
+        }
     }
 }
 

@@ -22,6 +22,8 @@ composer require platformsh/laravel-bridge
 
 * The Laravel `APP_KEY` is set based on the `PLATFORM_PROJECT_ENTROPY` variable, which is provided for exactly this purpose.
 
+* The Laravel `APP_URL` variable is set based on the current route if possible.
+
 * The `SESSION_SECURE_COOKIE` variable is set to true if it's not already defined.  A Platform.sh environment is by default encrypted-always, so there's no reason to allow unencrypted cookies.  This can be overridden by setting the Platform.sh variable `env:SESSION_SECURE_COOKIE` to 0.
 
 ## Common environment variables not set

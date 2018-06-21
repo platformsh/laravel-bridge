@@ -27,7 +27,7 @@ class LaravelBridgeRedisCacheTest extends TestCase
         ];
     }
 
-    public function test_not_on_platformsh_does_not_set_cache() : void
+    public function test_not_on_platformsh_does_nothing() : void
     {
         mapPlatformShEnvironment();
 
