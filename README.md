@@ -18,6 +18,8 @@ composer require platformsh/laravel-bridge
 
 * If a Platform.sh relationship named `rediscache` is defined, it will be mapped to the `REDIS_*` environment variables for Laravel.  Additionally, the `CACHE_DRIVER` variable will be set to `redis` to activate it automatically.
 
+* If a Platform.sh relationship named `redissession` is defined, the `SESSION_DRIVER` will be set to `redis` and the `REDIS_*` variables set based on that relationship. NOTE: This means you _*must*_ set 2 relationships to the same Redis service and endpoint, as Laravel reuses the same backend connection.
+
 * The Laravel `APP_KEY` is set based on the `PLATFORM_PROJECT_ENTROPY` variable, which is provided for exactly this purpose.
 
 * The `SESSION_SECURE_COOKIE` variable is set to true if it's not already defined.  A Platform.sh environment is by default encrypted-always, so there's no reason to allow unencrypted cookies.  This can be overridden by setting the Platform.sh variable `env:SESSION_SECURE_COOKIE` to 0.
@@ -29,4 +31,3 @@ Laravel provides reasonable defaults for many environment variables already and 
 * `env:APP_NAME`: The human-friendly name of the application.
 * `env:APP_ENV`: Whether the application is in `production` or `development` mode.
 * `env:APP_DEBUG`: Set true to enable verbose error messages.
-

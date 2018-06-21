@@ -31,19 +31,15 @@ function mapPlatformShEnvironment() : void
     $secure_cookie = getenv('SESSION_SECURE_COOKIE') ?: 1;
     setEnvVar('SESSION_SECURE_COOKIE', $secure_cookie);
 
-    if (!getenv('DB_DATABASE')) {
-        mapPlatformShDatabase('database');
-    }
+    mapPlatformShDatabase('database');
 
-    if (!getenv('REDIS_HOST')) {
-        mapPlatformShRedisCache('rediscache');
-    }
+    mapPlatformShRedisCache('rediscache');
+
+    mapPlatformShRedisSession('redissession');
 
     // @TODO Should MAIL_* be set as well?
 
     // @TODO Should we support a redisqueue service as well?
-
-    // @TODO Should we support a redissession service as well?
 
 }
 
@@ -72,12 +68,12 @@ function setEnvVar(string $name, $value = null) : void
     }
 }
 
-function mapPlatformShDatabase(string $dbRelationshipName) : void
+function mapPlatformShDatabase(string $relationshipName) : void
 {
     if (getenv('PLATFORM_RELATIONSHIPS')) {
         $relationships = json_decode(base64_decode(getenv('PLATFORM_RELATIONSHIPS'), true), true);
-        if (isset($relationships[$dbRelationshipName])) {
-            foreach ($relationships[$dbRelationshipName] as $endpoint) {
+        if (isset($relationships[$relationshipName])) {
+            foreach ($relationships[$relationshipName] as $endpoint) {
                 if (empty($endpoint['query']['is_master'])) {
                     continue;
                 }
@@ -94,13 +90,28 @@ function mapPlatformShDatabase(string $dbRelationshipName) : void
     }
 }
 
-function mapPlatformShRedisCache(string $cacheRelationshipName) : void
+function mapPlatformShRedisCache(string $relationshipName) : void
 {
     if (getenv('PLATFORM_RELATIONSHIPS')) {
         $relationships = json_decode(base64_decode(getenv('PLATFORM_RELATIONSHIPS'), true), true);
-        if (isset($relationships[$cacheRelationshipName])) {
+        if (isset($relationships[$relationshipName])) {
             setEnvVar('CACHE_DRIVER', 'redis');
-            foreach ($relationships[$cacheRelationshipName] as $endpoint) {
+            foreach ($relationships[$relationshipName] as $endpoint) {
+                setEnvVar('REDIS_HOST', $endpoint['host']);
+                setEnvVar('REDIS_PORT', $endpoint['port']);
+                break;
+            }
+        }
+    }
+}
+
+function mapPlatformShRedisSession(string $relationshipName) : void
+{
+    if (getenv('PLATFORM_RELATIONSHIPS')) {
+        $relationships = json_decode(base64_decode(getenv('PLATFORM_RELATIONSHIPS'), true), true);
+        if (isset($relationships[$relationshipName])) {
+            setEnvVar('SESSION_DRIVER', 'redis');
+            foreach ($relationships[$relationshipName] as $endpoint) {
                 setEnvVar('REDIS_HOST', $endpoint['host']);
                 setEnvVar('REDIS_PORT', $endpoint['port']);
                 break;

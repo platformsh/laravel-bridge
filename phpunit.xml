@@ -17,7 +17,7 @@
     verbose="false">
 
     <testsuites>
-        <testsuite name="Flex Bridge">
+        <testsuite name="Bridge">
             <directory>tests</directory>
         </testsuite>
     </testsuites>
