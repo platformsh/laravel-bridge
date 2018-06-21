@@ -11,66 +11,42 @@ use function Platformsh\LaravelBridge\mapPlatformShDatabase;
 class LaravelBridgeTest extends TestCase
 {
 
-    public function testDoesNotRunWithoutPlatformshVariables() : void
+    public function test_does_not_run_when_not_on_platformsh() : void
     {
         mapPlatformShEnvironment();
 
-        $this->assertFalse(getenv('APP_SECRET'));
+        $this->assertFalse(getenv('APP_KEY'));
     }
 
-    public function testSetAppSecret() : void
-    {
-        putenv('PLATFORM_APPLICATION=test');
-        putenv('PLATFORM_PROJECT_ENTROPY=test');
-
-        mapPlatformShEnvironment();
-
-        $this->assertEquals('test', $_SERVER['APP_SECRET']);
-        $this->assertEquals('test', getenv('APP_SECRET'));
-    }
-
-    public function testDontChangeAppSecret() : void
+    public function test_set_app_secret_if_not_set() : void
     {
         putenv('PLATFORM_APPLICATION=test');
         putenv('PLATFORM_PROJECT_ENTROPY=test');
-        putenv('APP_SECRET=original');
 
         mapPlatformShEnvironment();
 
-        $this->assertEquals('original', $_SERVER['APP_SECRET']);
-        $this->assertEquals('original', getenv('APP_SECRET'));
+        $this->assertEquals('test', $_SERVER['APP_KEY']);
+        $this->assertEquals('test', getenv('APP_KEY'));
     }
 
-    public function testAppEnvAlreadySetInServer() : void
+    public function test_dont_change_app_key_if_set() : void
     {
         putenv('PLATFORM_APPLICATION=test');
-        putenv('APP_ENV=dev');
+        putenv('PLATFORM_PROJECT_ENTROPY=test');
+        putenv('APP_KEY=original');
 
         mapPlatformShEnvironment();
 
-        $this->assertEquals('dev', $_SERVER['APP_ENV']);
-        $this->assertEquals('dev', getenv('APP_ENV'));
+        $this->assertEquals('original', $_SERVER['APP_KEY']);
+        $this->assertEquals('original', getenv('APP_KEY'));
     }
 
-    public function testAppEnvAlreadySetInEnv() : void
-    {
-        putenv('PLATFORM_APPLICATION=test');
-        putenv('APP_ENV=dev');
-
-        mapPlatformShEnvironment();
-
-        $this->assertEquals('dev', $_SERVER['APP_ENV']);
-        $this->assertEquals('dev', getenv('APP_ENV'));
-    }
-
-    public function testAppEnvNeedsDefault() : void
+    public function test_session_secure_cookie_set_true_if_unset() : void
     {
         putenv('PLATFORM_APPLICATION=test');
 
         mapPlatformShEnvironment();
 
-        $this->assertEquals('prod', $_SERVER['APP_ENV']);
-        $this->assertEquals('prod', getenv('APP_ENV'));
+        $this->assertEquals('1', getenv('SESSION_SECURE_COOKIE'));
     }
-
 }

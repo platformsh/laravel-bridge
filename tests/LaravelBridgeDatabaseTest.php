@@ -12,8 +12,6 @@ class LaravelBridgeDatabaseTest extends TestCase
 
     protected $relationships;
 
-    protected $defaultDbUrl;
-
     public function setUp()
     {
         parent::setUp();
@@ -31,26 +29,16 @@ class LaravelBridgeDatabaseTest extends TestCase
                 ]
             ]
         ];
-
-        $this->defaultDbUrl = sprintf(
-            '%s://%s:%s@%s:%s/%s?charset=utf8mb4&serverVersion=10.2',
-            'mysql',
-            '',
-            '',
-            'localhost',
-            3306,
-            ''
-        );
     }
 
-    public function testNotOnPlatformshDoesNotSetDatabase() : void
+    public function test_not_on_platformsh_does_not_set_database() : void
     {
         mapPlatformShEnvironment();
 
-        $this->assertArrayNotHasKey('DATABASE_URL', $_SERVER);
+        $this->assertFalse(getenv('DB_DATABASE'));
     }
 
-    public function testNoRelationships() : void
+    public function test_no_relationships_set_does_nothing() : void
     {
         // We assume no relationships array, but a PLATFORM_APPLICATION env var,
         // means we're in a build hook.
@@ -61,10 +49,15 @@ class LaravelBridgeDatabaseTest extends TestCase
 
         mapPlatformShEnvironment();
 
-        $this->assertEquals($this->defaultDbUrl, $_SERVER['DATABASE_URL']);
+        $this->assertFalse(getenv('DB_CONNECTION'));
+        $this->assertFalse(getenv('DB_HOST'));
+        $this->assertFalse(getenv('DB_PORT'));
+        $this->assertFalse(getenv('DB_DATABASE'));
+        $this->assertFalse(getenv('DB_USERNAME'));
+        $this->assertFalse(getenv('DB_PASSWORD'));
     }
 
-    public function testNoDatabaseRelationship() : void
+    public function test_no_database_relationship_set_does_nothing() : void
     {
         putenv('PLATFORM_APPLICATION=test');
 
@@ -75,17 +68,31 @@ class LaravelBridgeDatabaseTest extends TestCase
 
         mapPlatformShEnvironment();
 
-        $this->assertEquals($this->defaultDbUrl, $_SERVER['DATABASE_URL']);
+        $this->assertFalse(getenv('DB_CONNECTION'));
+        $this->assertFalse(getenv('DB_HOST'));
+        $this->assertFalse(getenv('DB_PORT'));
+        $this->assertFalse(getenv('DB_DATABASE'));
+        $this->assertFalse(getenv('DB_USERNAME'));
+        $this->assertFalse(getenv('DB_PASSWORD'));
     }
 
-    public function testDatabaseRelationshipSet() : void
+    public function test_database_relationship_gets_mapped() : void
     {
         putenv('PLATFORM_APPLICATION=test');
-        putenv(sprintf('PLATFORM_RELATIONSHIPS=%s', base64_encode(json_encode($this->relationships))));
+
+        $rels = $this->relationships;
+
+        putenv(sprintf('PLATFORM_RELATIONSHIPS=%s', base64_encode(json_encode($rels))));
 
         mapPlatformShEnvironment();
 
-        $this->assertEquals('mysql://user:@database.internal:3306/main?charset=utf8mb4&serverVersion=mariadb-10.2.12', $_SERVER['DATABASE_URL']);
-    }
+        $rel = $this->relationships['database'][0];
 
+        $this->assertEquals($rel['scheme'], getenv('DB_CONNECTION'));
+        $this->assertEquals($rel['host'], getenv('DB_HOST'));
+        $this->assertEquals($rel['port'], getenv('DB_PORT'));
+        $this->assertEquals($rel['path'], getenv('DB_DATABASE'));
+        $this->assertEquals($rel['username'], getenv('DB_USERNAME'));
+        $this->assertEquals($rel['password'], getenv('DB_PASSWORD'));
+    }
 }

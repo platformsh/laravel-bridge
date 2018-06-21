@@ -16,4 +16,17 @@ composer require platformsh/laravel-bridge
 
 * If a Platform.sh relationship named `database` is defined, it will be taken as an SQL database and mapped to the `DB_*` environment variables for Laravel.
 
-* If no `APP_ENV` value is set, it will default to `prod`.
+* If a Platform.sh relationship named `rediscache` is defined, it will be mapped to the `REDIS_*` environment variables for Laravel.  Additionally, the `CACHE_DRIVER` variable will be set to `redis` to activate it automatically.
+
+* The Laravel `APP_KEY` is set based on the `PLATFORM_PROJECT_ENTROPY` variable, which is provided for exactly this purpose.
+
+* The `SESSION_SECURE_COOKIE` variable is set to true if it's not already defined.  A Platform.sh environment is by default encrypted-always, so there's no reason to allow unencrypted cookies.  This can be overridden by setting the Platform.sh variable `env:SESSION_SECURE_COOKIE` to 0.
+
+## Common environment variables not set
+
+Laravel provides reasonable defaults for many environment variables already and this library does not override those.  They may, however, be customized by setting a Platform.sh variable named `env:ENV_NAME`. (Note the `env:` prefix.)  The most likely variables to override are listed below for convenience:
+
+* `env:APP_NAME`: The human-friendly name of the application.
+* `env:APP_ENV`: Whether the application is in `production` or `development` mode.
+* `env:APP_DEBUG`: Set true to enable verbose error messages.
+
