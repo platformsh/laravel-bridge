@@ -33,3 +33,4 @@ Laravel provides reasonable defaults for many environment variables already and 
 * `env:APP_NAME`: The human-friendly name of the application.
 * `env:APP_ENV`: Whether the application is in `production` or `development` mode.
 * `env:APP_DEBUG`: Set true to enable verbose error messages.
+* `env:APP_KEY`: Set using locally `php artisan key:generate --show` then using that key as the value.
