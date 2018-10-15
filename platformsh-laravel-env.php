@@ -26,7 +26,12 @@ function mapPlatformShEnvironment() : void
     // Set the application secret if it's not already set.
     $secret = getenv('APP_KEY');
     if (!$secret) {
-        $secret = "base64:" . base64_encode(substr(base64_decode(getenv('PLATFORM_PROJECT_ENTROPY')), 0, 32));
+        $project_entropy = getenv('PLATFORM_PROJECT_ENTROPY');
+        if ($project_entropy) {
+            $secret = "base64:" . base64_encode(substr(base64_decode($project_entropy), 0, 32));
+        } else {
+            $secret = null;
+        }
     }
     setEnvVar('APP_KEY', $secret);
 
