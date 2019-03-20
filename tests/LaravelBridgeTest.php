@@ -4,9 +4,7 @@ declare(strict_types=1);
 namespace Platformsh\FlexBridge\Tests;
 
 use PHPUnit\Framework\TestCase;
-
 use function Platformsh\LaravelBridge\mapPlatformShEnvironment;
-use function Platformsh\LaravelBridge\mapPlatformShDatabase;
 
 class LaravelBridgeTest extends TestCase
 {
@@ -20,7 +18,8 @@ class LaravelBridgeTest extends TestCase
 
     public function test_set_app_secret_if_not_set() : void
     {
-        putenv('PLATFORM_APPLICATION=test');
+        putenv('PLATFORM_APPLICATION_NAME=test');
+        putenv('PLATFORM_ENVIRONMENT=test');
         putenv('PLATFORM_PROJECT_ENTROPY=PI5YPW6P43NVU5WV4OU5DR2BHY5AEQYUCWE4BS2Y7N26Y4ZDKE6A====');
 
         mapPlatformShEnvironment();
@@ -31,7 +30,8 @@ class LaravelBridgeTest extends TestCase
 
     public function test_dont_change_app_key_if_set() : void
     {
-        putenv('PLATFORM_APPLICATION=test');
+        putenv('PLATFORM_APPLICATION_NAME=test');
+        putenv('PLATFORM_ENVIRONMENT=test');
         putenv('PLATFORM_PROJECT_ENTROPY=PI5YPW6P43NVU5WV4OU5DR2BHY5AEQYUCWE4BS2Y7N26Y4ZDKE6A====');
         putenv('APP_KEY=original');
 
@@ -43,7 +43,8 @@ class LaravelBridgeTest extends TestCase
 
     public function test_session_secure_cookie_set_true_if_unset() : void
     {
-        putenv('PLATFORM_APPLICATION=test');
+        putenv('PLATFORM_APPLICATION_NAME=test');
+        putenv('PLATFORM_ENVIRONMENT=test');
 
         mapPlatformShEnvironment();
 

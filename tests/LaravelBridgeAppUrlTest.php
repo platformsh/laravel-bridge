@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace Platformsh\FlexBridge\Tests;
 
 use PHPUnit\Framework\TestCase;
-
 use function Platformsh\LaravelBridge\mapPlatformShEnvironment;
 
 class LaravelBridgeAppUrlTest extends TestCase
@@ -37,7 +36,8 @@ class LaravelBridgeAppUrlTest extends TestCase
         // We assume no routes array, but a PLATFORM_APPLICATION env var,
         // means we're in a build hook.
 
-        putenv('PLATFORM_APPLICATION=test');
+        putenv('PLATFORM_APPLICATION_NAME=test');
+        putenv('PLATFORM_ENVIRONMENT=test');
         putenv('APP_URL=current');
 
         mapPlatformShEnvironment();
@@ -50,7 +50,8 @@ class LaravelBridgeAppUrlTest extends TestCase
      */
     public function test_app_url_set(string $url, string $appName): void
     {
-        putenv('PLATFORM_APPLICATION=test');
+        putenv('PLATFORM_APPLICATION_NAME=test');
+        putenv('PLATFORM_ENVIRONMENT=test');
 
         putenv(sprintf('PLATFORM_ROUTES=%s', base64_encode(json_encode($this->routes))));
         putenv(sprintf('PLATFORM_APPLICATION_NAME=%s', $appName));
