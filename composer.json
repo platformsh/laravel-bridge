@@ -10,7 +10,7 @@
         }
     ],
     "require": {
-        "platformsh/config-reader": "^2.0"
+        "platformsh/config-reader": "dev-master"
     },
     "autoload": {
         "files": ["platformsh-laravel-env.php"]
