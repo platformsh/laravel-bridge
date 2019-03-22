@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace Platformsh\FlexBridge\Tests;
 
 use PHPUnit\Framework\TestCase;
-
 use function Platformsh\LaravelBridge\mapPlatformShEnvironment;
 
 class LaravelBridgeDatabaseTest extends TestCase
@@ -43,7 +42,8 @@ class LaravelBridgeDatabaseTest extends TestCase
         // We assume no relationships array, but a PLATFORM_APPLICATION env var,
         // means we're in a build hook.
 
-        putenv('PLATFORM_APPLICATION=test');
+        putenv('PLATFORM_APPLICATION_NAME=test');
+        putenv('PLATFORM_ENVIRONMENT=test');
 
         //putenv(sprintf('PLATFORM_RELATIONSHIPS=%s', base64_encode(json_encode($this->relationships))));
 
@@ -59,7 +59,8 @@ class LaravelBridgeDatabaseTest extends TestCase
 
     public function test_no_database_relationship_set_does_nothing() : void
     {
-        putenv('PLATFORM_APPLICATION=test');
+        putenv('PLATFORM_APPLICATION_NAME=test');
+        putenv('PLATFORM_ENVIRONMENT=test');
 
         $rels = $this->relationships;
         unset($rels['database']);
@@ -78,7 +79,8 @@ class LaravelBridgeDatabaseTest extends TestCase
 
     public function test_database_relationship_gets_mapped() : void
     {
-        putenv('PLATFORM_APPLICATION=test');
+        putenv('PLATFORM_APPLICATION_NAME=test');
+        putenv('PLATFORM_ENVIRONMENT=test');
 
         $rels = $this->relationships;
 

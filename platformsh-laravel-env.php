@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Platformsh\LaravelBridge;
 
+use Platformsh\ConfigReader\Config;
+
 mapPlatformShEnvironment();
 
 /**
@@ -14,25 +16,21 @@ mapPlatformShEnvironment();
  */
 function mapPlatformShEnvironment() : void
 {
-    // If this env var is not set then we're not on a Platform.sh
-    // environment or in the build hook, so don't try to do anything.
-    if (!getenv('PLATFORM_APPLICATION')) {
+    $config = new Config();
+
+    if (!$config->inRuntime()) {
         return;
     }
 
     // Laravel needs an accurate base URL.
-    mapAppUrl();
+    mapAppUrl($config);
 
     // Set the application secret if it's not already set.
     $secret = getenv('APP_KEY');
-    if (!$secret) {
-        $project_entropy = getenv('PLATFORM_PROJECT_ENTROPY');
-        if ($project_entropy) {
-            $secret = "base64:" . base64_encode(substr(base64_decode($project_entropy), 0, 32));
-        } else {
-            $secret = null;
-        }
+    if (!$secret && $config->projectEntropy) {
+        $secret = "base64:" . base64_encode(substr(base64_decode($config->projectEntropy), 0, 32));
     }
+    // This value must always be defined, even if it's set to false/empty.
     setEnvVar('APP_KEY', $secret);
 
     // Force secure cookies on by default, since Platform.sh is SSL-all-the-things.
@@ -40,17 +38,10 @@ function mapPlatformShEnvironment() : void
     $secure_cookie = getenv('SESSION_SECURE_COOKIE') ?: 1;
     setEnvVar('SESSION_SECURE_COOKIE', $secure_cookie);
 
-    // Decode the relationships array once for performance. It's not quite as encapsulated
-    // but performance wins here.
-    if (getenv('PLATFORM_RELATIONSHIPS')) {
-        $relationships = json_decode(base64_decode(getenv('PLATFORM_RELATIONSHIPS'), true), true);
-
-        mapPlatformShDatabase('database', $relationships);
-
-        mapPlatformShRedisCache('rediscache', $relationships);
-
-        mapPlatformShRedisSession('redissession', $relationships);
-    }
+    // Map services as feasible.
+    mapPlatformShDatabase('database', $config);
+    mapPlatformShRedisCache('rediscache', $config);
+    mapPlatformShRedisSession('redissession', $config);
 
     // @TODO Should MAIL_* be set as well?
 
@@ -83,68 +74,65 @@ function setEnvVar(string $name, $value = null) : void
     }
 }
 
-function mapAppUrl() : void
+function mapAppUrl(Config $config) : void
 {
     // If the APP_URL is already set, leave it be.
     if (getenv('APP_URL')) {
         return;
     }
 
-    if (!getenv('PLATFORM_ROUTES')) {
-        return;
-    }
-
-    $routes = json_decode(base64_decode(getenv('PLATFORM_ROUTES')), TRUE);
     $settings['trusted_host_patterns'] = [];
-    foreach ($routes as $url => $route) {
+    foreach ($config->routes() as $url => $route) {
         $host = parse_url($url, PHP_URL_HOST);
         // This conditional translates to "if it's the route for this app".
         // Note: wildcard routes are not currently supported by this code.
-        if ($host !== FALSE && $route['type'] == 'upstream' && $route['upstream'] == getenv('PLATFORM_APPLICATION_NAME')) {
+        if ($host !== FALSE && $route['type'] == 'upstream' && $route['upstream'] == $config->applicationName) {
             setEnvVar('APP_URL', $url);
             return;
         }
     }
 }
 
-function mapPlatformShDatabase(string $relationshipName, array $relationships) : void
+function mapPlatformShDatabase(string $relationshipName, Config $config) : void
 {
-    if (isset($relationships[$relationshipName])) {
-        foreach ($relationships[$relationshipName] as $endpoint) {
-            if (empty($endpoint['query']['is_master'])) {
-                continue;
-            }
-
-            setEnvVar('DB_CONNECTION', $endpoint['scheme']);
-            setEnvVar('DB_HOST', $endpoint['host']);
-            setEnvVar('DB_PORT', $endpoint['port']);
-            setEnvVar('DB_DATABASE', $endpoint['path']);
-            setEnvVar('DB_USERNAME', $endpoint['username']);
-            setEnvVar('DB_PASSWORD', $endpoint['password']);
-        }
+    if (!$config->hasRelationship($relationshipName)) {
+        return;
     }
+
+    $credentials = $config->credentials($relationshipName);
+
+    setEnvVar('DB_CONNECTION', $credentials['scheme']);
+    setEnvVar('DB_HOST', $credentials['host']);
+    setEnvVar('DB_PORT', $credentials['port']);
+    setEnvVar('DB_DATABASE', $credentials['path']);
+    setEnvVar('DB_USERNAME', $credentials['username']);
+    setEnvVar('DB_PASSWORD', $credentials['password']);
 }
 
-function mapPlatformShRedisCache(string $relationshipName, array $relationships) : void
+function mapPlatformShRedisCache(string $relationshipName, Config $config) : void
 {
-    if (isset($relationships[$relationshipName])) {
-        setEnvVar('CACHE_DRIVER', 'redis');
-        foreach ($relationships[$relationshipName] as $endpoint) {
-            setEnvVar('REDIS_HOST', $endpoint['host']);
-            setEnvVar('REDIS_PORT', $endpoint['port']);
-            break;
-        }
+    if (!$config->hasRelationship($relationshipName)) {
+        return;
     }
+
+    $credentials = $config->credentials($relationshipName);
+
+    setEnvVar('CACHE_DRIVER', 'redis');
+    setEnvVar('REDIS_CLIENT', 'phpredis');
+    setEnvVar('REDIS_HOST', $credentials['host']);
+    setEnvVar('REDIS_PORT', $credentials['port']);
 }
 
-function mapPlatformShRedisSession(string $relationshipName, array $relationships) : void
+function mapPlatformShRedisSession(string $relationshipName, Config $config) : void
 {
-    if (isset($relationships[$relationshipName])) {
-        setEnvVar('SESSION_DRIVER', 'redis');
-        foreach ($relationships[$relationshipName] as $endpoint) {
-            setEnvVar('REDIS_HOST', $endpoint['host']);
-            setEnvVar('REDIS_PORT', $endpoint['port']);
-            break;
-        }
+    if (!$config->hasRelationship($relationshipName)) {
+        return;
     }
+
+    $credentials = $config->credentials($relationshipName);
+
+    setEnvVar('SESSION_DRIVER', 'redis');
+    setEnvVar('REDIS_CLIENT', 'phpredis');
+    setEnvVar('REDIS_HOST', $credentials['host']);
+    setEnvVar('REDIS_PORT', $credentials['port']);
 }

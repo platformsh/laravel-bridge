@@ -9,7 +9,9 @@
             "email": "larry@platform.sh"
         }
     ],
-    "require": {},
+    "require": {
+        "platformsh/config-reader": "^2.1.0"
+    },
     "autoload": {
         "files": ["platformsh-laravel-env.php"]
     },
