@@ -14,6 +14,12 @@ Simply require this package using Composer.  When Composer's autoload is include
 composer require platformsh/laravel-bridge
 ```
 
+Note make sure to clear the cache on relevant platform.sh environments after updating this package.
+
+```
+php artisan cache:clear
+```
+
 ## Mappings performed
 
 * If a Platform.sh relationship named `database` is defined, it will be taken as an SQL database and mapped to the `DB_*` environment variables for Laravel.
