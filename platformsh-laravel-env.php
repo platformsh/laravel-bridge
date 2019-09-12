@@ -42,8 +42,7 @@ function mapPlatformShEnvironment() : void
     mapPlatformShDatabase('database', $config);
     mapPlatformShRedisCache('rediscache', $config);
     mapPlatformShRedisSession('redissession', $config);
-
-    // @TODO Should MAIL_* be set as well?
+    mapPlatformShMail('mail', $config);
 
     // @TODO Should we support a redisqueue service as well?
 
@@ -135,4 +134,11 @@ function mapPlatformShRedisSession(string $relationshipName, Config $config) : v
     setEnvVar('REDIS_CLIENT', 'phpredis');
     setEnvVar('REDIS_HOST', $credentials['host']);
     setEnvVar('REDIS_PORT', $credentials['port']);
+}
+
+function mapPlatformShMail(string $relationshipName, Config $config) : void
+{
+    setEnvVar('MAIL_DRIVER', 'smtp');
+    setEnvVar('MAIL_HOST', $config->smtpHost);
+    setEnvVar('MAIL_PORT', '25');
 }
