@@ -1,13 +1,14 @@
 <?php
 declare(strict_types=1);
 
-namespace Platformsh\FlexBridge\Tests;
+namespace Platformsh\LaravelBridge\Tests;
 
 use PHPUnit\Framework\TestCase;
 use function Platformsh\LaravelBridge\mapPlatformShEnvironment;
 
 class LaravelBridgeDatabaseTest extends TestCase
 {
+    use RouteTestData;
 
     protected $relationships;
 
@@ -44,6 +45,8 @@ class LaravelBridgeDatabaseTest extends TestCase
 
         putenv('PLATFORM_APPLICATION_NAME=test');
         putenv('PLATFORM_ENVIRONMENT=test');
+        putenv('PLATFORM_PROJECT_ENTROPY=test');
+        $this->loadDummyRoutes();
 
         //putenv(sprintf('PLATFORM_RELATIONSHIPS=%s', base64_encode(json_encode($this->relationships))));
 
@@ -61,6 +64,8 @@ class LaravelBridgeDatabaseTest extends TestCase
     {
         putenv('PLATFORM_APPLICATION_NAME=test');
         putenv('PLATFORM_ENVIRONMENT=test');
+        putenv('PLATFORM_PROJECT_ENTROPY=test');
+        $this->loadDummyRoutes();
 
         $rels = $this->relationships;
         unset($rels['database']);
@@ -81,6 +86,8 @@ class LaravelBridgeDatabaseTest extends TestCase
     {
         putenv('PLATFORM_APPLICATION_NAME=test');
         putenv('PLATFORM_ENVIRONMENT=test');
+        putenv('PLATFORM_PROJECT_ENTROPY=test');
+        $this->loadDummyRoutes();
 
         $rels = $this->relationships;
 
