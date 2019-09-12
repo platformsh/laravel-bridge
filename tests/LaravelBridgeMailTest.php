@@ -30,7 +30,7 @@ class LaravelBridgeMailTest extends TestCase
         putenv('PLATFORM_APPLICATION_NAME=test');
         putenv('PLATFORM_ENVIRONMENT=test');
 
-        putenv(sprintf('SMTP_HOST=%s', $this->host));
+        putenv(sprintf('PLATFORM_SMTP_HOST=%s', $this->host));
 
         mapPlatformShEnvironment();
 
