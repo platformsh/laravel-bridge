@@ -1,14 +1,13 @@
 <?php
 declare(strict_types=1);
 
-namespace Platformsh\FlexBridge\Tests;
+namespace Platformsh\LaravelBridge\Tests;
 
 use PHPUnit\Framework\TestCase;
 use function Platformsh\LaravelBridge\mapPlatformShEnvironment;
 
 class LaravelBridgeAppUrlTest extends TestCase
 {
-
     protected $routes = [
         'https://one.example.com' => [
             'type' => 'upstream',
@@ -38,6 +37,7 @@ class LaravelBridgeAppUrlTest extends TestCase
 
         putenv('PLATFORM_APPLICATION_NAME=test');
         putenv('PLATFORM_ENVIRONMENT=test');
+        putenv('PLATFORM_PROJECT_ENTROPY=test');
         putenv('APP_URL=current');
 
         mapPlatformShEnvironment();
@@ -52,6 +52,7 @@ class LaravelBridgeAppUrlTest extends TestCase
     {
         putenv('PLATFORM_APPLICATION_NAME=test');
         putenv('PLATFORM_ENVIRONMENT=test');
+        putenv('PLATFORM_PROJECT_ENTROPY=test');
 
         putenv(sprintf('PLATFORM_ROUTES=%s', base64_encode(json_encode($this->routes))));
         putenv(sprintf('PLATFORM_APPLICATION_NAME=%s', $appName));

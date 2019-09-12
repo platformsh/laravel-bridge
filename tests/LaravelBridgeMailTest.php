@@ -1,15 +1,19 @@
 <?php
 declare(strict_types=1);
 
-namespace Platformsh\FlexBridge\Tests;
+namespace Platformsh\LaravelBridge\Tests;
 
 use PHPUnit\Framework\TestCase;
 use function Platformsh\LaravelBridge\mapPlatformShEnvironment;
 
 class LaravelBridgeMailTest extends TestCase
 {
+    use RouteTestData;
 
     protected $config;
+
+    /** @var string */
+    protected $host;
 
     public function setUp()
     {
@@ -29,8 +33,10 @@ class LaravelBridgeMailTest extends TestCase
     {
         putenv('PLATFORM_APPLICATION_NAME=test');
         putenv('PLATFORM_ENVIRONMENT=test');
+        putenv('PLATFORM_PROJECT_ENTROPY=test');
+        $this->loadDummyRoutes();
 
-        putenv(sprintf('SMTP_HOST=%s', $this->host));
+        putenv(sprintf('PLATFORM_SMTP_HOST=%s', $this->host));
 
         mapPlatformShEnvironment();
 

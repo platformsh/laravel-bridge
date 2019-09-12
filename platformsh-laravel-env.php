@@ -80,6 +80,13 @@ function mapAppUrl(Config $config) : void
         return;
     }
 
+    // If not on Platform.sh, say in a local dev environment, simply
+    // do nothing.  Users need to set the host pattern themselves
+    // in a .env file.
+    if (!$config->inRuntime()) {
+        return;
+    }
+
     $settings['trusted_host_patterns'] = [];
     foreach ($config->routes() as $url => $route) {
         $host = parse_url($url, PHP_URL_HOST);
@@ -138,6 +145,10 @@ function mapPlatformShRedisSession(string $relationshipName, Config $config) : v
 
 function mapPlatformShMail(string $relationshipName, Config $config) : void
 {
+    if (!isset($config->smtpHost)) {
+        return;
+    }
+
     setEnvVar('MAIL_DRIVER', 'smtp');
     setEnvVar('MAIL_HOST', $config->smtpHost);
     setEnvVar('MAIL_PORT', '25');
