@@ -43,6 +43,6 @@ class LaravelBridgeMailTest extends TestCase
         $this->assertEquals('smtp', getenv('MAIL_DRIVER'));
         $this->assertEquals($this->host, getenv('MAIL_HOST'));
         $this->assertEquals('25', getenv('MAIL_PORT'));
-        $this->assertEquals(null, getenv('MAIL_ENCRYPTION'));
+        $this->assertEquals('0', getenv('MAIL_ENCRYPTION'));
     }
 }
