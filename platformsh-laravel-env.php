@@ -42,7 +42,7 @@ function mapPlatformShEnvironment() : void
     mapPlatformShDatabase('database', $config);
     mapPlatformShRedisCache('rediscache', $config);
     mapPlatformShRedisSession('redissession', $config);
-    mapPlatformShMail('mail', $config);
+    mapPlatformShMail($config);
 
     // @TODO Should we support a redisqueue service as well?
 
@@ -143,7 +143,7 @@ function mapPlatformShRedisSession(string $relationshipName, Config $config) : v
     setEnvVar('REDIS_PORT', $credentials['port']);
 }
 
-function mapPlatformShMail(string $relationshipName, Config $config) : void
+function mapPlatformShMail(Config $config) : void
 {
     if (!isset($config->smtpHost)) {
         return;
