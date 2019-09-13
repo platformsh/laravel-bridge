@@ -20,16 +20,6 @@ Note make sure to clear the cache on relevant platform.sh environments after upd
 php artisan cache:clear
 ```
 
-### Mail
-
-Until Laravel 6.0.4 it was not possible to disable `encryption` via environmental variables.
-Therefore if you use a version below Laravel 6.0.4 you will also need to modify
-your `mail.php` file to set `encryption` to `null`.
-
-```
-    'encryption' => null,
-```
-
 ## Mappings performed
 
 * If a Platform.sh relationship named `database` is defined, it will be taken as an SQL database and mapped to the `DB_*` environment variables for Laravel.
@@ -43,6 +33,12 @@ your `mail.php` file to set `encryption` to `null`.
 * The Laravel `APP_URL` variable is set based on the current route if possible.
 
 * The `SESSION_SECURE_COOKIE` variable is set to true if it's not already defined.  A Platform.sh environment is by default encrypted-always, so there's no reason to allow unencrypted cookies.  This can be overridden by setting the Platform.sh variable `env:SESSION_SECURE_COOKIE` to 0.
+
+* The `MAIL_DRIVER`, `MAIL_HOST`, and `MAIL_PORT` variables are set to support sending email through the Platform.sh mail gateway.  The `MAIL_ENCRYPTION` value is also set to `0` to disable TLS, as it is not needed or supported within Platform.sh's network.  Note, however, that doing so is only supported on Laravel 6.0.4 and later.  On earlier versions you *must* manually modify `mail.php` and set `encryption` to `null`:
+
+```
+    'encryption' => null,
+```
 
 ## Common environment variables not set
 
