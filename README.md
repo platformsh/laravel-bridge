@@ -20,6 +20,16 @@ Note make sure to clear the cache on relevant platform.sh environments after upd
 php artisan cache:clear
 ```
 
+### Mail
+
+Until Laravel 6.0.4 it was not possible to disable `encryption` via environmental variables.
+Therefore if you use a version below Laravel 6.0.4 you will also need to modify
+your `mail.php` file to set `encryption` to `null`.
+
+```
+    'encryption' => null,
+```
+
 ## Mappings performed
 
 * If a Platform.sh relationship named `database` is defined, it will be taken as an SQL database and mapped to the `DB_*` environment variables for Laravel.
