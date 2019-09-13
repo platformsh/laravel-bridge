@@ -152,4 +152,5 @@ function mapPlatformShMail(string $relationshipName, Config $config) : void
     setEnvVar('MAIL_DRIVER', 'smtp');
     setEnvVar('MAIL_HOST', $config->smtpHost);
     setEnvVar('MAIL_PORT', '25');
+    setEnvVar('MAIL_ENCRYPTION', null);
 }
