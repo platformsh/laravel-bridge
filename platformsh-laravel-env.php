@@ -87,7 +87,6 @@ function mapAppUrl(Config $config) : void
         return;
     }
 
-    $settings['trusted_host_patterns'] = [];
     foreach ($config->routes() as $url => $route) {
         $host = parse_url($url, PHP_URL_HOST);
         // This conditional translates to "if it's the route for this app".
