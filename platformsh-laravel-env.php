@@ -87,8 +87,6 @@ function mapAppUrl(Config $config) : void
         return;
     }
 
-    $settings['trusted_host_patterns'] = [];
-
     $routes = $config->getUpstreamRoutes($config->applicationName);
 
     $requestUrl = false;
