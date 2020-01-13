@@ -87,9 +87,11 @@ function mapAppUrl(Config $config) : void
         return;
     }
 
-    $settings['trusted_host_patterns'] = [];
-
     $routes = $config->getUpstreamRoutes($config->applicationName);
+
+    if (!count($routes)) {
+        return;
+    }
 
     $requestUrl = false;
     if (isset($_SERVER['SERVER_NAME'])) {
