@@ -89,6 +89,10 @@ function mapAppUrl(Config $config) : void
 
     $routes = $config->getUpstreamRoutes($config->applicationName);
 
+    if (!count($routes)) {
+        return;
+    }
+
     $requestUrl = false;
     if (isset($_SERVER['SERVER_NAME'])) {
         $requestUrl = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https://' : 'http://')
