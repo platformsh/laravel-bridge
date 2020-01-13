@@ -88,15 +88,24 @@ function mapAppUrl(Config $config) : void
     }
 
     $settings['trusted_host_patterns'] = [];
-    foreach ($config->routes() as $url => $route) {
-        $host = parse_url($url, PHP_URL_HOST);
-        // This conditional translates to "if it's the route for this app".
-        // Note: wildcard routes are not currently supported by this code.
-        if ($host !== FALSE && $route['type'] == 'upstream' && $route['upstream'] == $config->applicationName) {
-            setEnvVar('APP_URL', $url);
-            return;
-        }
+
+    $routes = $config->getUpstreamRoutes($config->applicationName);
+
+    $requestUrl = false;
+    if (isset($_SERVER['SERVER_NAME'])) {
+        $requestUrl = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https://' : 'http://')
+            . $_SERVER['SERVER_NAME'];
     }
+
+    usort($routes, function (array $a, array $b) use ($requestUrl) {
+        // false sorts before true, normally, so negate the comparison.
+        return
+            [strpos($a['url'], $requestUrl) !== 0, !$a['primary'], strpos($a['url'], 'https://') !== 0, strlen($a['url'])]
+            <=>
+            [strpos($b['url'], $requestUrl) !== 0, !$b['primary'], strpos($b['url'], 'https://') !== 0, strlen($b['url'])];
+    });
+
+    setEnvVar('APP_URL', reset($routes)['url'] ?: null);
 }
 
 function mapPlatformShDatabase(string $relationshipName, Config $config) : void
