@@ -15,7 +15,7 @@ class LaravelBridgeMailTest extends TestCase
     /** @var string */
     protected $host;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 
