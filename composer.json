@@ -29,7 +29,7 @@
       },
       "laravel": {
         "providers": [
-          "Platformsh\\LaravelBridge\\CronExpression\\CronExpressionServiceProvider"
+          "\\Platformsh\\LaravelBridge\\CronExpression\\CronExpressionServiceProvider"
         ]
       }
     },
