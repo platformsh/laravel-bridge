@@ -18,12 +18,14 @@
   "autoload": {
     "files": [
       "platformsh-laravel-env.php"
-    ]
+    ],
+    "psr-4": {
+      "Platformsh\\LaravelBridge\\CronExpression\\": "CronExpression/"
+    }
   },
   "autoload-dev": {
     "psr-4": {
-      "Platformsh\\LaravelBridge\\Tests\\": "tests/",
-      "Platformsh\\LaravelBridge\\CronExpression\\": "CronExpression/"
+      "Platformsh\\LaravelBridge\\Tests\\": "tests/"
     }
   },
   "extra": {
