@@ -11,7 +11,8 @@
     ],
     "require": {
         "php": ">=7.2",
-        "platformsh/config-reader": "^2.4.0"
+        "platformsh/config-reader": "^2.4.0",
+        "illuminate/support": "^8.60"
     },
     "autoload": {
         "files": ["platformsh-laravel-env.php"]
@@ -22,9 +23,14 @@
         }
     },
     "extra": {
-        "branch-alias": {
-            "dev-master": "1.0.x-dev"
-        }
+      "branch-alias": {
+        "dev-master": "1.0.x-dev"
+      },
+      "laravel": {
+        "providers": [
+          "Platformsh\\LaravelBridge\\CronExpression\\CronExpressionServiceProvider"
+        ]
+      }
     },
     "require-dev": {
         "phpunit/phpunit": "^8.5"
