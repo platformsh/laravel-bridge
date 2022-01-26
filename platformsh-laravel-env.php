@@ -93,7 +93,7 @@ function mapAppUrl(Config $config) : void
         return;
     }
 
-    $requestUrl = false;
+    $requestUrl = '';
     if (isset($_SERVER['SERVER_NAME'])) {
         $requestUrl = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https://' : 'http://')
             . $_SERVER['SERVER_NAME'];
