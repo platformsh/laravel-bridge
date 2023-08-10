@@ -161,6 +161,7 @@ function mapPlatformShMail(Config $config) : void
     }
 
     setEnvVar('MAIL_DRIVER', 'smtp');
+    setEnvVar('MAIL_MAILER', 'smtp'); // From laravel 7 onwards MAIL_DRIVER is renamed to MAIL_MAILER
     setEnvVar('MAIL_HOST', $config->smtpHost);
     setEnvVar('MAIL_PORT', '25');
     setEnvVar('MAIL_ENCRYPTION', '0');
