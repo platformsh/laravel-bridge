@@ -17,7 +17,7 @@ mapPlatformShEnvironment();
 function mapPlatformShEnvironment() : void
 {
     $config = new Config();
-
+    
     if (!$config->inRuntime()) {
         return;
     }
@@ -156,7 +156,7 @@ function mapPlatformShRedisSession(string $relationshipName, Config $config) : v
 
 function mapPlatformShMail(Config $config) : void
 {
-    if (!isset($config->smtpHost)) {
+    if (empty($config->smtpHost)) {
         return;
     }
 
