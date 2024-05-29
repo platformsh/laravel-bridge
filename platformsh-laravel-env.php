@@ -134,7 +134,8 @@ function mapPlatformShRedisCache(string $relationshipName, Config $config) : voi
 
     $credentials = $config->credentials($relationshipName);
 
-    setEnvVar('CACHE_DRIVER', 'redis');
+    setEnvVar('CACHE_DRIVER', 'redis'); // Compatible with Laravel v10 and below
+    setEnvVar('CACHE_STORE', 'redis'); // Compatibile with Laravel v11+
     setEnvVar('REDIS_CLIENT', 'phpredis');
     setEnvVar('REDIS_HOST', $credentials['host']);
     setEnvVar('REDIS_PORT', $credentials['port']);

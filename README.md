@@ -22,7 +22,7 @@ php artisan cache:clear
 
 * If a Platform.sh relationship named `database` is defined, it will be taken as an SQL database and mapped to the `DB_*` environment variables for Laravel.
 
-* If a Platform.sh relationship named `rediscache` is defined, it will be mapped to the `REDIS_*` environment variables for Laravel.  Additionally, the `CACHE_DRIVER` variable will be set to `redis` to activate it automatically.
+* If a Platform.sh relationship named `rediscache` is defined, it will be mapped to the `REDIS_*` environment variables for Laravel.  Additionally, the `CACHE_DRIVER` (up to Laravel v10) and `CACHE_STORE` (Laravel v11+) variables will be set to `redis` to activate it automatically.
 
 * If a Platform.sh relationship named `redissession` is defined, the `SESSION_DRIVER` will be set to `redis` and the `REDIS_*` variables set based on that relationship. NOTE: This means you _*must*_ set 2 relationships to the same Redis service and endpoint, as Laravel reuses the same backend connection.
 

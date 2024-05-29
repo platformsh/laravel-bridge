@@ -69,6 +69,7 @@ class LaravelBridgeRedisCacheTest extends TestCase
         $this->assertFalse(getenv('REDIS_HOST'));
         $this->assertFalse(getenv('REDIS_PORT'));
         $this->assertFalse(getenv('CACHE_DRIVER'));
+        $this->assertFalse(getenv('CACHE_STORE'));
     }
 
     public function test_rediscache_relationship_gets_mapped() : void
@@ -87,6 +88,7 @@ class LaravelBridgeRedisCacheTest extends TestCase
         $rel = $this->relationships['rediscache'][0];
 
         $this->assertEquals('redis', getenv('CACHE_DRIVER'));
+        $this->assertEquals('redis', getenv('CACHE_STORE'));
         $this->assertEquals('phpredis', getenv('REDIS_CLIENT'));
         $this->assertEquals($rel['host'], getenv('REDIS_HOST'));
         $this->assertEquals($rel['port'], getenv('REDIS_PORT'));
