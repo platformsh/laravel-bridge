@@ -8,7 +8,7 @@ Laravel prefers all configuration to come in through environment variables with 
 format.  Upsun provides configuration information as environment variables in a different specific format.
 This library handles mapping the Upsun variables to the format Laravel expects for common values.
 
-## Requirement
+## Requirements
 * PHP >= 7.4
 
 ## Usage
