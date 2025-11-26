@@ -10,7 +10,7 @@
         }
     ],
     "require": {
-        "php": ">=7.2",
+        "php": ">=7.4",
         "platformsh/config-reader": "^3.0"
     },
     "autoload": {
@@ -27,6 +27,6 @@
         }
     },
     "require-dev": {
-        "phpunit/phpunit": "^8.5"
+        "phpunit/phpunit": "^9.6"
     }
 }
